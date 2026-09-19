@@ -1,0 +1,17 @@
+{
+  "name": "Spendly — Daily Expense Tracker",
+  "short_name": "Spendly",
+  "description": "A simple, private daily expense tracker.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#3d6a4b",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
