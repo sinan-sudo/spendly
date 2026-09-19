@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spendly — Daily Expense Tracker</title>
+  <meta name="theme-color" content="#3d6a4b" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Spendly" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#top" aria-label="Spendly home"><span class="brand-mark">S</span><span>spendly</span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-item active" href="#top"><span>▦</span> Overview</a>
+        <a class="nav-item" href="#transactions"><span>↕</span> Transactions</a>
+        <a class="nav-item" href="#insights"><span>◔</span> Insights</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="budget-card">
+          <span class="eyebrow">Monthly budget</span>
+          <strong id="budgetAmount">₹25,000</strong>
+          <div class="budget-track"><span id="budgetProgress"></span></div>
+          <small id="budgetText">Set a budget to stay on track</small>
+        </div>
+        <button class="text-button" id="manageBudget" type="button">⌘ Manage budget</button>
+      </div>
+    </aside>
+
+    <main id="top">
+      <header class="topbar">
+        <div class="page-title"><p class="eyebrow">Personal finance</p><h1>Good morning, Alex <span>✦</span></h1></div>
+        <div class="topbar-actions"><button class="icon-button" type="button" id="exportData" aria-label="Export expenses" title="Export expenses">⇩</button><button class="avatar" type="button" aria-label="Account menu">A</button></div>
+      </header>
+
+      <section class="hero-row" aria-labelledby="monthHeading">
+        <div><p class="eyebrow" id="monthHeading">This month</p><h2 id="monthDisplay">September 2026</h2></div>
+        <div class="month-controls"><button id="previousMonth" class="circle-button" type="button" aria-label="Previous month">‹</button><button id="nextMonth" class="circle-button" type="button" aria-label="Next month">›</button><button class="primary-button" id="openExpense" type="button"><span>＋</span> Add expense</button></div>
+      </section>
+
+      <section class="stats-grid" aria-label="Expense summary">
+        <article class="stat-card spent"><div><p>Total spent</p><strong id="totalSpent">₹0</strong><span id="monthlyChange">No expenses yet</span></div><div class="stat-symbol">₹</div></article>
+        <article class="stat-card"><div><p>Daily average</p><strong id="dailyAverage">₹0</strong><span id="averageNote">for this month</span></div><div class="stat-symbol soft">◌</div></article>
+        <article class="stat-card"><div><p>Top category</p><strong id="topCategory">—</strong><span id="topCategoryAmount">Add your first expense</span></div><div class="stat-symbol soft">⌁</div></article>
+      </section>
+
+      <section class="content-grid" id="insights">
+        <article class="panel spending-panel">
+          <div class="panel-heading"><div><p class="eyebrow">Spending flow</p><h3>Daily spend</h3></div><span class="quiet-badge" id="chartPeriod">Sep 1–30</span></div>
+          <div class="chart-wrap"><div id="dailyChart" class="daily-chart" aria-label="Daily expenses bar chart"></div></div>
+          <div class="chart-labels"><span>1 Sep</span><span>8 Sep</span><span>15 Sep</span><span>22 Sep</span><span>Today</span></div>
+        </article>
+        <article class="panel category-panel">
+          <div class="panel-heading"><div><p class="eyebrow">Breakdown</p><h3>By category</h3></div><button class="text-button small" type="button" id="showAllCategories">View all</button></div>
+          <div class="donut-layout"><div class="donut" id="donutChart"><div><strong id="donutTotal">₹0</strong><span>spent</span></div></div><div class="legend" id="categoryLegend"></div></div>
+        </article>
+      </section>
+
+      <section class="panel transactions" id="transactions">
+        <div class="panel-heading transactions-heading"><div><p class="eyebrow">Your activity</p><h3>Recent transactions</h3></div><div class="transaction-tools"><label class="search"><span>⌕</span><input id="searchExpenses" type="search" placeholder="Search expenses" aria-label="Search expenses" /></label><select id="paymentFilter" aria-label="Filter by payment method"><option value="all">All methods</option><option value="UPI">UPI</option><option value="Debit card">Debit card</option><option value="Credit card">Credit card</option><option value="Cash">Cash</option><option value="Bank transfer">Bank transfer</option></select></div></div>
+        <div class="transaction-list" id="transactionList"></div>
+        <div class="empty-state" id="emptyState" hidden><div>◌</div><h3>No expenses found</h3><p>Start by adding your first daily expense.</p><button class="primary-button" type="button" id="emptyAdd">Add expense</button></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="expenseDialog">
+    <form id="expenseForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">New transaction</p><h2>Add an expense</h2></div><button class="icon-button close-dialog" type="button" aria-label="Close">×</button></div>
+      <div class="form-grid">
+        <label class="field full"><span>What did you spend on?</span><input name="title" id="expenseTitle" placeholder="e.g. Groceries at FreshMart" required maxlength="50" /></label>
+        <label class="field"><span>Amount (₹)</span><input name="amount" id="expenseAmount" type="number" min="1" step="1" placeholder="0" required /></label>
+        <label class="field"><span>Date</span><input name="date" id="expenseDate" type="date" required /></label>
+        <label class="field"><span>Category</span><select name="category" id="expenseCategory"><option>Food & dining</option><option>Groceries</option><option>Transport</option><option>Shopping</option><option>Bills & utilities</option><option>Health</option><option>Entertainment</option><option>Other</option></select></label>
+        <label class="field"><span>Debited from</span><select name="method" id="expenseMethod"><option>UPI</option><option>Debit card</option><option>Credit card</option><option>Cash</option><option>Bank transfer</option></select></label>
+        <label class="field full"><span>Account / payment note <em>(optional)</em></span><input name="account" id="expenseAccount" placeholder="e.g. HDFC Savings •••• 4192" maxlength="55" /></label>
+      </div>
+      <div class="dialog-actions"><button class="secondary-button" id="cancelExpense" type="button">Cancel</button><button class="primary-button" type="submit">Save expense</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="budgetDialog">
+    <form id="budgetForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">Your plan</p><h2>Monthly budget</h2></div><button class="icon-button close-budget" type="button" aria-label="Close">×</button></div>
+      <label class="field"><span>Budget amount (₹)</span><input id="budgetInput" type="number" min="1" step="500" required /></label>
+      <div class="dialog-actions"><button class="secondary-button" id="cancelBudget" type="button">Cancel</button><button class="primary-button" type="submit">Save budget</button></div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>
