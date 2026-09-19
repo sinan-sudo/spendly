@@ -1,4 +1,4 @@
-const CACHE_NAME = "spendly-v1";
+const CACHE_NAME = "spendly-v2";
 const APP_FILES = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
@@ -19,3 +19,4 @@ self.addEventListener("fetch", event => {
     return response;
   }).catch(() => caches.match("./index.html"))));
 });
+
