@@ -1,5 +1,6 @@
 const storageKey = "spendly-expenses-v1";
 const budgetKey = "spendly-budget-v1";
+const profileKey = "spendly-profile-v1";
 const categories = {
   "Food & dining": { icon: "⌁", color: "#e8894b" }, Groceries: { icon: "♧", color: "#a9cf64" }, Transport: { icon: "↗", color: "#7daec3" }, Shopping: { icon: "♢", color: "#9c8dcc" }, "Bills & utilities": { icon: "⌁", color: "#d0ab57" }, Health: { icon: "✚", color: "#e28a9b" }, Entertainment: { icon: "◐", color: "#5ba5a2" }, Other: { icon: "•", color: "#87938a" }
 };
@@ -8,9 +9,10 @@ const shortMoney = value => value >= 1000 ? `₹${(value / 1000).toFixed(value %
 let selectedDate = new Date(); selectedDate.setDate(1);
 let budget = Number(localStorage.getItem(budgetKey)) || 25000;
 let expenses = JSON.parse(localStorage.getItem(storageKey) || "[]");
+let profileName = localStorage.getItem(profileKey) || "Alex";
 
 const $ = id => document.getElementById(id);
-const dialog = $("expenseDialog"), budgetDialog = $("budgetDialog");
+const dialog = $("expenseDialog"), budgetDialog = $("budgetDialog"), profileDialog = $("profileDialog");
 function ymd(date) { const offset = date.getTimezoneOffset(); return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10); }
 function save() { localStorage.setItem(storageKey, JSON.stringify(expenses)); }
 function expenseMonth(item) { const d = new Date(`${item.date}T12:00:00`); return d.getFullYear() === selectedDate.getFullYear() && d.getMonth() === selectedDate.getMonth(); }
@@ -50,6 +52,7 @@ function renderTransactions() {
   document.querySelectorAll("[data-delete]").forEach(button => button.addEventListener("click", () => { expenses = expenses.filter(item => item.id !== button.dataset.delete); save(); render(); }));
 }
 function render() { const items = monthExpenses(); renderHeader(items); renderChart(items); renderCategories(items); renderTransactions(); }
+function renderProfile() { $("profileName").textContent = profileName; $("profileNameInput").value = profileName; $("avatar").textContent = profileName.trim().charAt(0).toUpperCase() || "A"; }
 function openExpense() { $("expenseForm").reset(); $("expenseDate").value = ymd(new Date()); dialog.showModal(); $("expenseTitle").focus(); }
 
 $("openExpense").addEventListener("click", openExpense); $("emptyAdd").addEventListener("click", openExpense);
@@ -60,10 +63,14 @@ $("cancelExpense").addEventListener("click", () => dialog.close()); document.que
 $("manageBudget").addEventListener("click", () => { $("budgetInput").value = budget; budgetDialog.showModal(); });
 $("budgetForm").addEventListener("submit", event => { event.preventDefault(); budget = Number($("budgetInput").value); localStorage.setItem(budgetKey, budget); budgetDialog.close(); render(); });
 $("cancelBudget").addEventListener("click", () => budgetDialog.close()); document.querySelector(".close-budget").addEventListener("click", () => budgetDialog.close());
+$("avatar").addEventListener("click", () => { $("profileNameInput").value = profileName; profileDialog.showModal(); $("profileNameInput").focus(); });
+$("profileForm").addEventListener("submit", event => { event.preventDefault(); profileName = $("profileNameInput").value.trim() || "Alex"; localStorage.setItem(profileKey, profileName); profileDialog.close(); renderProfile(); });
+$("cancelProfile").addEventListener("click", () => profileDialog.close()); document.querySelector(".close-profile").addEventListener("click", () => profileDialog.close());
 $("searchExpenses").addEventListener("input", renderTransactions); $("paymentFilter").addEventListener("change", renderTransactions);
 $("showAllCategories").addEventListener("click", () => { $("searchExpenses").value = ""; $("paymentFilter").value = "all"; document.querySelector("#transactions").scrollIntoView({ behavior: "smooth" }); });
 $("exportData").addEventListener("click", () => { const csv = ["Date,Title,Category,Amount,Payment method,Account", ...expenses.map(x => [x.date,x.title,x.category,x.amount,x.method,x.account || ""].map(v => `\"${String(v).replaceAll('"','""')}\"`).join(","))].join("\n"); const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv" })); a.download = "spendly-expenses.csv"; a.click(); URL.revokeObjectURL(a.href); });
 render();
+renderProfile();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js").catch(() => {}));
