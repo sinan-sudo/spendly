@@ -39,8 +39,8 @@
 
     <main id="top">
       <header class="topbar">
-        <div class="page-title"><p class="eyebrow">Personal finance</p><h1>Good morning, Alex <span>✦</span></h1></div>
-        <div class="topbar-actions"><button class="icon-button" type="button" id="exportData" aria-label="Export expenses" title="Export expenses">⇩</button><button class="avatar" type="button" aria-label="Account menu">A</button></div>
+        <div class="page-title"><p class="eyebrow">Personal finance</p><h1>Good morning, <span id="profileName">Alex</span> <b>✦</b></h1></div>
+        <div class="topbar-actions"><button class="icon-button" type="button" id="exportData" aria-label="Export expenses" title="Export expenses">⇩</button><button class="avatar" id="avatar" type="button" aria-label="Edit profile">A</button></div>
       </header>
 
       <section class="hero-row" aria-labelledby="monthHeading">
@@ -94,6 +94,14 @@
       <div class="dialog-heading"><div><p class="eyebrow">Your plan</p><h2>Monthly budget</h2></div><button class="icon-button close-budget" type="button" aria-label="Close">×</button></div>
       <label class="field"><span>Budget amount (₹)</span><input id="budgetInput" type="number" min="1" step="500" required /></label>
       <div class="dialog-actions"><button class="secondary-button" id="cancelBudget" type="button">Cancel</button><button class="primary-button" type="submit">Save budget</button></div>
+    </form>
+  </dialog>
+  <dialog id="profileDialog">
+    <form id="profileForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">Your profile</p><h2>Personalize Spendly</h2></div><button class="icon-button close-profile" type="button" aria-label="Close">×</button></div>
+      <label class="field"><span>Your name</span><input id="profileNameInput" type="text" placeholder="Enter your name" maxlength="30" required /></label>
+      <p class="form-help">Your name is saved privately on this device.</p>
+      <div class="dialog-actions"><button class="secondary-button" id="cancelProfile" type="button">Cancel</button><button class="primary-button" type="submit">Save profile</button></div>
     </form>
   </dialog>
   <script src="app.js"></script>
